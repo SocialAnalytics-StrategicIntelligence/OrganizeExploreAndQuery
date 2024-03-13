@@ -4,59 +4,71 @@ output: html_notebook
 ---
 ```{r}
 rm(list = ls())
-denguelink='https://github.com/SocialAnalytics-StrategicIntelligence/OrganizeExploreAndQuery/raw/main/dataFiles/ByProvinceWeek_AllCases.pkl'
+denguelink='https://github.com/SocialAnalytics-StrategicIntelligence/OrganizeExploreAndQuery/raw/main/dataFiles/ByYear_stats.pkl'
 
 library(reticulate)
 # py_install("pandas")
 pd <- import("pandas")
-dengue <- pd$read_pickle(denguelink)
+dengueStats <- pd$read_pickle(denguelink)
 
 
-str(dengue)
+str(dengueStats) 
 
 
 ```
-```{r}
-str(dengue)
-```
-
 ```{r}
 library(ggplot2)
-ggplot(data=dengue, aes(y=edad )) + geom_boxplot(aes(x=enfermedad))
-```
+ggplot(data=dengueStats,aes(x=ano,y=edad_mean)) + 
+    geom_point() + 
+    geom_smooth(aes(color=enfermedad))
 
-```{r}
-ggplot(data=dengue, aes(y=edad )) + geom_boxplot(aes(x=factor(ano))) + labs(x='año')
-
-```
-
-```{r}
-ggplot(data=dengue, aes(y=edad )) + geom_boxplot(aes(x=factor(ano))) + labs(x='año') +facet_grid(enfermedad~.)
 
 ```
 ```{r}
-dengue=dengue[dengue$ano>=2010,]
-dengue
+ggplot(data=dengueStats,aes(x=ano,y=edad_median)) + 
+    geom_point() + 
+    geom_smooth(aes(color=enfermedad))
+```
+
+```{r}
+ggplot(data=dengueStats,aes(x=ano,y=case_sum)) + 
+    geom_point() + 
+    geom_smooth(aes(color=enfermedad))
 ```
 
 
 ```{r}
-
-
-ggplot(data=dengue, aes(y=edad )) + geom_boxplot(aes(x=factor(ano))) + labs(x='año') +facet_grid(enfermedad~.)
-
+ggplot(data=dengueStats,aes(x=ano,y=case_sum)) + 
+    geom_point() + 
+    geom_smooth(aes(color=enfermedad)) +
 ```
-
 
 
 ```{r}
-dengueAge_year_Long=aggregate(data=dengue, edad~ano+enfermedad,mean)
-dengueAge_year_Long
+scale_y_log10(labels = scales::comma)
+```
 
+
+```{r}
+denguelink2='https://github.com/SocialAnalytics-StrategicIntelligence/OrganizeExploreAndQuery/raw/main/dataFiles/ByYear_LongStats.pkl'
+
+dengueLongStats <- pd$read_pickle(denguelink2)
+
+
+str(dengueLongStats) 
 ```
 ```{r}
-ggplot(data=dengueAge_year_Long, aes(y=edad)) + geom_line(aes(x=factor(ano),color=enfermedad,group=enfermedad)) + labs(x='año',y='edad_promedio')# +facet_grid(variable~.)
+ggplot(data=dengueLongStats,
+       aes(x=ano,y=statsValue,color=enfermedad))+ theme_light() +
+    geom_smooth() + facet_grid(statsName~.,scales = 'free_y') + scale_y_log10(labels=scales::comma)
 ```
+
+```{r}
+ggplot(data=dengueLongStats,
+       aes(x=ano,y=statsValue,color=enfermedad))+ theme_light() +
+    geom_line() + facet_grid(statsName~.,scales = 'free_y') + scale_y_log10()
+```
+
 
 
 ```{r}
@@ -64,6 +76,12 @@ ggplot(data=dengueAge_year_Long, aes(y=edad)) + geom_line(aes(x=factor(ano),colo
 dengueCase_year_Long=aggregate(data=dengue, case~ano+enfermedad,sum)
 dengueCase_year_Long
 ```
+```{r}
+ggplot(data=dengueLong, aes(y=sumCases)) + geom_line(aes(x=factor(ano),color=enfermedad,group=enfermedad)) + labs(x='año',y='casos totales') +
+  scale_y_log10()
+# +facet_grid(variable~.)
+```
+
 ```{r}
 ggplot(data=dengueCase_year_Long, aes(y=case)) + geom_line(aes(x=factor(ano),color=enfermedad,group=enfermedad)) + labs(x='año',y='casos totales') +
   scale_y_log10()
