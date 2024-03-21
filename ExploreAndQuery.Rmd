@@ -1,6 +1,17 @@
+---
+title: ""
+output:
+  bookdown::html_document2:
+    code_folding: hide
+---
+
 <img src="https://i.imgur.com/6U6q5jQ.png"/>
 
-# Explore and Query
+
+<h1>Social Analytics and Strategic Intelligence</h1>
+
+<h2>Session 1: Explore and Query</h2>
+
 
 
 ```{r klippy, echo=FALSE, include=TRUE}
@@ -12,7 +23,7 @@ Let's get the data we produced in Pytho into R. Here, **ByYear_stats**:
 
 ```{r, warning=FALSE}
 rm(list = ls())
-denguelink='https://github.com/SocialAnalytics-StrategicIntelligence/OrganizeExploreAndQuery/raw/main/dataFiles/ByYear_stats.pkl'
+denguelink='https://github.com/SocialAnalytics-StrategicIntelligence/TableOperations/raw/main/dataFiles/ByYear_stats.pkl'
 
 # opening the pickle data:
 
@@ -25,6 +36,25 @@ dengueStats <- pd$read_pickle(denguelink)
 str(dengueStats) 
 
 
+```
+
+Basic stats:
+
+```{r}
+summary(dengueStats)
+```
+
+```{r}
+library(ggplot2)
+datagg=ggplot(data=dengueStats)
+datagg + geom_boxplot(aes(y=edad_mean)) + coord_flip()
+```
+```{r}
+datagg + geom_boxplot(aes(y=edad_mean, x=enfermedad)) + coord_flip()
+```
+
+```{r}
+datagg + geom_boxplot(aes(y=edad_mean, x=as.ordered(ano))) + facet_grid(enfermedad~.)
 ```
 
 Are the symptoms distributed fairly the same accross ages?
@@ -71,13 +101,15 @@ Let's bring the same  data in long format (*ByYear_LongStats*):
 
 
 ```{r}
-denguelink2='https://github.com/SocialAnalytics-StrategicIntelligence/OrganizeExploreAndQuery/raw/main/dataFiles/ByYear_LongStats.pkl'
+denguelink2='https://github.com/SocialAnalytics-StrategicIntelligence/TableOperations/raw/main/dataFiles/ByYear_LongStats.pkl'
 
 dengueLongStats <- pd$read_pickle(denguelink2)
 
 
 str(dengueLongStats) 
 ```
+
+
 Facets will help create complex plots in an easy way:
 
 * All the stats by year (smooth - semilog):
@@ -98,7 +130,7 @@ facets +
 The data *worst_ProvYear_alarma_Frequency* tell us the frequency of the worst province by region by year:
 
 ```{r}
-denguelink3='https://github.com/SocialAnalytics-StrategicIntelligence/OrganizeExploreAndQuery/raw/main/dataFiles/worst_ProvYear_alarma_Frequency.csv'
+denguelink3='https://github.com/SocialAnalytics-StrategicIntelligence/TableOperations/raw/main/dataFiles/worst_ProvYear_alarma_Frequency.csv'
 
 dengueProvWorst <- read.csv(denguelink3)
 
@@ -110,9 +142,16 @@ For instance, LORETO has data for 14 years:
 dengueProvWorst[dengueProvWorst$departamento=='LORETO',]
 ```
 
-In one year, ALTO AMAZONAS was the wors case of people with *alarm* situation; while MAYNAS had that position for 13 years.
+In one year, ALTO AMAZONAS was the worst case of people with *alarm* situation; while MAYNAS had that position for 13 years.
 
-We could see distribution of the worst provinces:
+What is the worst cases?
+
+```{r}
+dengueProvWorst[order(-dengueProvWorst$case),]
+```
+
+
+We could see the distribution of the worst provinces:
 
 ```{r heatDescending, eval=TRUE}
 
@@ -131,12 +170,18 @@ heatBetter + theme(axis.text.x = element_text(angle = 60,vjust = 1,hjust = 1),
 Let' see the info about rateAlarma:
 
 ```{r}
-denguelink4='https://raw.githubusercontent.com/SocialAnalytics-StrategicIntelligence/OrganizeExploreAndQuery/main/dataFiles/ByYearPlace.pkl'
+denguelink4='https://raw.githubusercontent.com/SocialAnalytics-StrategicIntelligence/TableOperations/main/dataFiles/ByYearPlace.pkl'
 
 dengueYearPlace <- pd$read_pickle(denguelink4)
 
 str(dengueYearPlace) 
 ```
+Basic stats:
+
+```{r}
+summary(dengueYearPlace)
+```
+
 
 Where and when?
 
